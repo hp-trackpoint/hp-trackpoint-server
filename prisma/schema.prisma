@@ -7,13 +7,89 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id  Int @id @default(autoincrement())
-  username String @db.VarChar(50) @unique
-  password String @db.VarChar(50)
-  nickName String @db.VarChar(50)
-  email String @db.VarChar(50)
-  headPic String @db.VarChar(100) @default("")
-  createTime DateTime @default(now())
-  updateTime DateTime @updatedAt
+// 埋点类型枚举
+enum TrackType {
+  PAGE    // 页面埋点
+  MODULE  // 模块埋点
+}
+
+// 页面埋点定义
+model PageTrack {
+  id          Int       @id @default(autoincrement())
+  cid         String    @unique @db.VarChar(50)     
+  name        String    @db.VarChar(100)            
+  path        String    @db.VarChar(200)            // 添加页面路径字段
+  description String?   @db.Text                    
+  status      Boolean   @default(true)              
+  createTime  DateTime  @default(now())
+  updateTime  DateTime  @updatedAt
+  records     PageTrackRecord[]                     
+  modules     ModuleTrack[]                        // 添加这行，定义与模块的关系
+}
+
+// 模块埋点定义
+model ModuleTrack {
+  id          Int       @id @default(autoincrement())
+  bid         String    @unique @db.VarChar(50)     
+  name        String    @db.VarChar(100)            
+  pageCid     String    @db.VarChar(50)            // 修改为 pageCid
+  page        PageTrack @relation(fields: [pageCid], references: [cid]) // 关联到 cid
+  description String?   @db.Text                    
+  status      Boolean   @default(true)              
+  createTime  DateTime  @default(now())
+  updateTime  DateTime  @updatedAt
+  records     ModuleTrackRecord[]                   
+}
+
+// 页面埋点数据记录
+model PageTrackRecord {
+  id          Int      @id @default(autoincrement())
+  pageId      Int                                   // 关联的页面ID
+  page        PageTrack @relation(fields: [pageId], references: [id])
+  environment String   @db.VarChar(20)              // 环境
+  eventTime   DateTime                              // 事件时间
+  userId      Int?                                  // 用户ID
+  
+  // 设备信息
+  deviceInfo  Json?                                // 设备信息
+  
+  // 页面信息
+  url         String?  @db.Text                    // 当前URL
+  referrer    String?  @db.Text                    // 来源URL
+  
+  // 其他信息
+  extraInfo   Json?                                // 扩展信息
+  sdkVersion  String   @db.VarChar(20)             // SDK版本
+  createTime  DateTime @default(now())
+
+  @@index([pageId])
+  @@index([userId])
+  @@index([eventTime])
+  @@index([environment])
+}
+
+// 模块埋点数据记录
+model ModuleTrackRecord {
+  id          Int      @id @default(autoincrement())
+  moduleId    Int                                   // 关联的模块ID
+  module      ModuleTrack @relation(fields: [moduleId], references: [id])
+  environment String   @db.VarChar(20)              // 环境
+  eventTime   DateTime                              // 事件时间
+  userId      Int?                                  // 用户ID
+  
+  // 设备信息
+  deviceInfo  Json?                                // 设备信息
+  
+  // 模块信息
+  moduleInfo  Json?                                // 模块相关信息
+  
+  // 其他信息
+  extraInfo   Json?                                // 扩展信息
+  sdkVersion  String   @db.VarChar(20)             // SDK版本
+  createTime  DateTime @default(now())
+
+  @@index([moduleId])
+  @@index([userId])
+  @@index([eventTime])
+  @@index([environment])
 }

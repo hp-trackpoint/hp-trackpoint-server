@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
-import { EmailModule } from './email/email.module';
+import { TrackManageModule } from './track/track-manage.module';
 
 @Module({
-  imports: [PrismaModule, RedisModule],
+  imports: [PrismaModule, RedisModule, TrackManageModule],
   controllers: [AppController],
   providers: [AppService],
 })
