@@ -3,11 +3,16 @@
 ## 环境准备
 
 - 连接 redis 服务
+  - brew install redis
+  - brew services start redis
+  - brew services stop redis
 - 连接 postgresql 数据库
+  - brew install postgresql@14
+  - brew services start postgresql@14
 
 ### 启动项目
 
-```bash
+````bash
 # 安装依赖
 pnpm install
 
@@ -47,9 +52,10 @@ curl -X POST http://localhost:3000/track-manage/page \
     "path": "/user",
     "description": "用户中心页面"
 }'
-```
+````
 
 2. **第二步：查询页面埋点**
+
 ```bash
 # 查询所有页面埋点
 curl http://localhost:3000/track-manage/page?page=1&pageSize=10
@@ -59,6 +65,7 @@ curl http://localhost:3000/track-manage/page/home_page
 ```
 
 3. **第三步：创建模块埋点**
+
 ```bash
 # 创建登录表单模块埋点
 curl -X POST http://localhost:3000/track-manage/module \
@@ -82,6 +89,7 @@ curl -X POST http://localhost:3000/track-manage/module \
 ```
 
 4. **第四步：查询模块埋点**
+
 ```bash
 # 查询所有模块埋点
 curl http://localhost:3000/track-manage/module?page=1&pageSize=10
@@ -91,6 +99,7 @@ curl http://localhost:3000/track-manage/module/login_form
 ```
 
 5. **第五步：更新埋点信息**
+
 ```bash
 # 更新页面埋点
 curl -X PATCH http://localhost:3000/track-manage/page/home_page \
@@ -110,6 +119,7 @@ curl -X PATCH http://localhost:3000/track-manage/module/login_form \
 ```
 
 6. **第六步：测试数据上报**
+
 ```bash
 # 上报页面埋点数据
 curl -X POST http://localhost:3000/track-report \
