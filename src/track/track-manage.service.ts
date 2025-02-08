@@ -7,17 +7,18 @@ import { CreateModuleTrackDto } from './dto/create-module-track.dto';
 export class TrackManageService {
   constructor(private prisma: PrismaService) {}
 
-  // 页面埋点管理
+  // 创建页面埋点（Create）
   async createPageTrack(createPageTrackDto: CreatePageTrackDto) {
     return this.prisma.pageTrack.create({
       data: createPageTrackDto,
     });
   }
 
+  // 查询所有页面埋点（Read）
   async findAllPageTracks(page = 1, pageSize = 10) {
     const total = await this.prisma.pageTrack.count();
     const items = await this.prisma.pageTrack.findMany({
-      skip: (page - 1) * pageSize,
+      skip: (page - 1) * pageSize, // 跳过前面的记录，实现分页的原理
       take: pageSize * 1,  // 确保是数字类型
       include: {
         _count: {
@@ -30,6 +31,7 @@ export class TrackManageService {
     return { items, total, page, pageSize };
   }
 
+  // 查询单个页面埋点（Read）
   async findOnePageTrack(cid: string) {
     const pageTrack = await this.prisma.pageTrack.findUnique({
       where: { cid },
@@ -47,6 +49,7 @@ export class TrackManageService {
     return pageTrack;
   }
 
+  // 更新页面埋点（Update）
   async updatePageTrack(cid: string, updateDto: Partial<CreatePageTrackDto>) {
     await this.findOnePageTrack(cid);
     return this.prisma.pageTrack.update({
@@ -55,6 +58,7 @@ export class TrackManageService {
     });
   }
 
+  // 删除页面埋点（Delete）
   async removePageTrack(cid: string) {
     await this.findOnePageTrack(cid);
     return this.prisma.pageTrack.delete({
