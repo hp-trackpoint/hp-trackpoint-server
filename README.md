@@ -3,11 +3,16 @@
 ## 本地开发环境准备
 
 - 连接 redis 服务
+  - brew install redis
+  - brew services start redis
+  - brew services stop redis
 - 连接 postgresql 数据库
+  - brew install postgresql@14
+  - brew services start postgresql@14
 
 ### 启动项目
 
-```bash
+````bash
 # 安装依赖
 pnpm install
 
