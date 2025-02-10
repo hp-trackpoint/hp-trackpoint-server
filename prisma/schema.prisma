@@ -42,6 +42,7 @@ model ModuleTrack {
 }
 
 // 页面埋点数据记录
+// 在 PageTrackRecord 和 ModuleTrackRecord 模型中添加新字段
 model PageTrackRecord {
   id          Int      @id @default(autoincrement())
   pageId      Int                                   // 关联的页面ID
@@ -49,6 +50,8 @@ model PageTrackRecord {
   environment String   @db.VarChar(20)              // 环境
   eventTime   DateTime                              // 事件时间
   userId      Int?                                  // 用户ID
+  eventType String
+  eventName String
   
   // 设备信息
   deviceInfo  Json?                                // 设备信息
@@ -76,6 +79,8 @@ model ModuleTrackRecord {
   environment String   @db.VarChar(20)              // 环境
   eventTime   DateTime                              // 事件时间
   userId      Int?                                  // 用户ID
+  eventType String
+  eventName String
   
   // 设备信息
   deviceInfo  Json?                                // 设备信息

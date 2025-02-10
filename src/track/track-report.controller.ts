@@ -1,13 +1,13 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { TrackReportService } from './track-report.service';
-import { TrackReportDto } from './dto/track-report.dto';
+import { TrackBatchReportDto } from './dto/track-batch-report.dto';
 
 @Controller('track-report')
 export class TrackReportController {
   constructor(private readonly trackReportService: TrackReportService) {}
 
   @Post()
-  report(@Body() reportDto: TrackReportDto) {
-    return this.trackReportService.report(reportDto);
+  report(@Body() reportDto: TrackBatchReportDto) {
+    return this.trackReportService.batchReport(reportDto);
   }
 }
