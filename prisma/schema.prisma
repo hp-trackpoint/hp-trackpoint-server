@@ -15,7 +15,7 @@ enum TrackType {
 
 // 页面埋点定义
 model PageTrack {
-  id          Int       @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())//主键
   cid         String    @unique @db.VarChar(50)     
   name        String    @db.VarChar(100)            
   path        String    @db.VarChar(200)            // 添加页面路径字段
@@ -24,7 +24,8 @@ model PageTrack {
   createTime  DateTime  @default(now())
   updateTime  DateTime  @updatedAt
   records     PageTrackRecord[]                     
-  modules     ModuleTrack[]                        // 添加这行，定义与模块的关系
+  modules     ModuleTrack[]          
+  performance PagePerformance[]              
 }
 
 // 模块埋点定义
@@ -93,3 +94,20 @@ model ModuleTrackRecord {
   @@index([eventTime])
   @@index([environment])
 }
+
+// 页面性能指标
+model PagePerformance {
+  id                     Int          @id @default(autoincrement())
+  pageId                   Int
+  page                   PageTrack    @relation(fields: [pageId], references: [id])
+  environment            String       @db.VarChar(20)        // 环境
+  eventTime              DateTime                       // 事件时间
+  userId                 Int?                            // 用户 ID
+  firstScreenLoadTime    Int                            // 首屏加载时间（毫秒）
+  whiteScreenTime        Int                            // 白屏时间（毫秒）
+  httpRequestTime        Json?                          // HTTP 请求的响应时间及相关信息
+  staticResourceTime     Int                            // 静态资源整体下载时间（毫秒）
+  pageRenderingTime      Int                            // 页面渲染时间（毫秒）
+  interactionAnimationTime Int                          // 页面交互动画完成时间（毫秒）
+  extraInfo              Json?                          // 扩展信息 
+  }

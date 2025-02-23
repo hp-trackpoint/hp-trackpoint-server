@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { TrackStatsService } from './track-stats.service';
-import { PageStatsQueryDto } from './dto/page-stats-query.dto';
+import { PageStatsQueryDto, RegionDto } from './dto/page-stats-query.dto';
 
 @Controller('track-stats')
 export class TrackStatsController {
@@ -9,5 +9,10 @@ export class TrackStatsController {
   @Get('page')
   getPageStats(@Query() query: PageStatsQueryDto) {
     return this.trackStatsService.getPageStats(query);
+  }
+
+  @Get('region')
+  getRegion(@Query() query: RegionDto) {
+    return this.trackStatsService.getRegion(query);
   }
 }

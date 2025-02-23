@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PageStatsQueryDto } from './dto/page-stats-query.dto';
+import { PageStatsQueryDto, RegionDto } from './dto/page-stats-query.dto';
 
 @Injectable()
 export class TrackStatsService {
@@ -59,13 +59,13 @@ export class TrackStatsService {
         totalPV: basicStats.reduce((sum, item) => sum + item._count.id, 0),
         totalUV: uniqueUsers.length,
       },
-      environmentStats: basicStats.map(stat => ({
+      environmentStats: basicStats.map((stat) => ({
         environment: stat.environment,
         pv: stat._count.id,
         firstVisit: stat._min.eventTime,
         lastVisit: stat._max.eventTime,
       })),
-      deviceStats: deviceStats.map(stat => ({
+      deviceStats: deviceStats.map((stat) => ({
         deviceInfo: stat.deviceInfo,
         count: stat._count.id,
       })),
@@ -73,6 +73,53 @@ export class TrackStatsService {
         totalClicks: moduleStats.reduce((sum, item) => sum + item._count.id, 0),
         modules: moduleStats,
       },
+    };
+  }
+  async getRegion(query: RegionDto) {
+    const { cid } = query;
+
+    const whereCondition: any = {
+      page: { cid },
+    };
+
+    // 基础统计数据
+    const basicStats = await this.prisma.pageTrackRecord.groupBy({
+      by: ['environment'],
+      where: whereCondition,
+      _count: { id: true },
+      _min: { eventTime: true },
+      _max: { eventTime: true },
+    });
+
+    // UV 统计
+    const uniqueUsers = await this.prisma.pageTrackRecord.groupBy({
+      by: ['userId'],
+      where: {
+        ...whereCondition,
+        userId: { not: null },
+      },
+    });
+
+    // 设备统计
+    const deviceStats = await this.prisma.pageTrackRecord.groupBy({
+      by: ['deviceInfo'],
+      where: whereCondition,
+      _count: { id: true },
+    });
+
+    return {
+      totalPV: basicStats.reduce((sum, item) => sum + item._count.id, 0),
+      totalUV: uniqueUsers.length,
+      ip: deviceStats.length,
+      bounceRate: basicStats.reduce((sum, item) => sum + item._count.id, 0),
+      avgDuration:
+        basicStats.reduce(
+          (pre, cur: any) =>
+            pre +
+            (new Date(cur.lastVisit).getTime() -
+              new Date(cur.firstVisit).getTime()),
+          0,
+        ) / basicStats.length,
     };
   }
 }

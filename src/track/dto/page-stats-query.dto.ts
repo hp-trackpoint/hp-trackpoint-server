@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsString, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class PageStatsQueryDto {
   @IsNotEmpty()
@@ -12,4 +17,10 @@ export class PageStatsQueryDto {
   @IsOptional()
   @IsDateString()
   endTime?: string;
+}
+
+export class RegionDto {
+  @IsNotEmpty()
+  @IsString()
+  cid: string;
 }
