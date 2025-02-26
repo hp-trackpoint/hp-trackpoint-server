@@ -15,4 +15,9 @@ export class TrackStatsController {
   getRegion(@Query() query: RegionDto) {
     return this.trackStatsService.getRegion(query);
   }
+
+  @Get('region')
+  getTodayRegion(@Query() query: RegionDto) {
+    return this.trackStatsService.getTodayRegion(query);
+  }
 }

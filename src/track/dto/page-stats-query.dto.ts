@@ -24,3 +24,17 @@ export class RegionDto {
   @IsString()
   cid: string;
 }
+
+export class toDayRegionDto {
+  @IsNotEmpty()
+  @IsString()
+  cid: string;
+
+  @IsOptional()
+  @IsDateString()
+  startTime: string;
+
+  @IsOptional()
+  @IsDateString()
+  endTime?: string;
+}

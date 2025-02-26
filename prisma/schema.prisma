@@ -25,7 +25,7 @@ model PageTrack {
   updateTime  DateTime  @updatedAt
   records     PageTrackRecord[]                     
   modules     ModuleTrack[]          
-  performance PagePerformance[]              
+  performance PagePerformance[] @relation("PagePerformancePage") // 明确指定关系名称
 }
 
 // 模块埋点定义
@@ -39,7 +39,9 @@ model ModuleTrack {
   status      Boolean   @default(true)              
   createTime  DateTime  @default(now())
   updateTime  DateTime  @updatedAt
-  records     ModuleTrackRecord[]                   
+  records     ModuleTrackRecord[]        
+  performance PagePerformance[] @relation("PagePerformanceModule") // 明确指定关系名称   
+     
 }
 
 // 页面埋点数据记录
@@ -62,6 +64,7 @@ model PageTrackRecord {
   extraInfo   Json?                                // 扩展信息
   sdkVersion  String   @db.VarChar(20)             // SDK版本
   createTime  DateTime @default(now())
+ 
 
   @@index([pageId])
   @@index([userId])
@@ -89,6 +92,8 @@ model ModuleTrackRecord {
   sdkVersion  String   @db.VarChar(20)             // SDK版本
   createTime  DateTime @default(now())
 
+
+
   @@index([moduleId])
   @@index([userId])
   @@index([eventTime])
@@ -97,17 +102,12 @@ model ModuleTrackRecord {
 
 // 页面性能指标
 model PagePerformance {
-  id                     Int          @id @default(autoincrement())
-  pageId                   Int
-  page                   PageTrack    @relation(fields: [pageId], references: [id])
-  environment            String       @db.VarChar(20)        // 环境
-  eventTime              DateTime                       // 事件时间
-  userId                 Int?                            // 用户 ID
-  firstScreenLoadTime    Int                            // 首屏加载时间（毫秒）
-  whiteScreenTime        Int                            // 白屏时间（毫秒）
-  httpRequestTime        Json?                          // HTTP 请求的响应时间及相关信息
-  staticResourceTime     Int                            // 静态资源整体下载时间（毫秒）
-  pageRenderingTime      Int                            // 页面渲染时间（毫秒）
-  interactionAnimationTime Int                          // 页面交互动画完成时间（毫秒）
-  extraInfo              Json?                          // 扩展信息 
-  }
+  id          Int          @id @default(autoincrement())
+  // 明确区分两种关系路径
+  pageId      Int?         @unique // 确保一对一关系
+  page        PageTrack?   @relation("PagePerformancePage", fields: [pageId], references: [id])
+  moduleId    Int?         @unique // 确保一对一关系
+  module      ModuleTrack? @relation("PagePerformanceModule", fields: [moduleId], references: [id])
+  extraInfo   Json?
+  createTime  DateTime     @default(now())
+}
