@@ -15,7 +15,7 @@ export class TrackManageService {
   }
 
   // 查询所有页面埋点（Read）
-  async findAllPageTracks(page = 1, pageSize = 10) {
+  async findAllPageTracks(page = 1, pageSize = 10) {//查询全部PageTrackRecord表
     const total = await this.prisma.pageTrack.count();
     const items = await this.prisma.pageTrack.findMany({
       skip: (page - 1) * pageSize, // 跳过前面的记录，实现分页的原理
@@ -32,7 +32,7 @@ export class TrackManageService {
   }
 
   // 查询单个页面埋点（Read）
-  async findOnePageTrack(cid: string) {
+  async findOnePageTrack(cid: string) {//根据cid查询PageTrackRecord表
     const pageTrack = await this.prisma.pageTrack.findUnique({
       where: { cid },
       include: {

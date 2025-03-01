@@ -8,7 +8,7 @@ export class TrackManageController {
   constructor(private readonly trackManageService: TrackManageService) {}
 
   // 页面埋点管理
-  @Post('page')
+  @Post('page')//创建页面埋点
   createPageTrack(@Body() createPageTrackDto: CreatePageTrackDto) {
     return this.trackManageService.createPageTrack(createPageTrackDto);
   }

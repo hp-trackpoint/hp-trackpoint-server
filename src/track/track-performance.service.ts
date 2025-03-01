@@ -1,18 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { TrackPerformanceDto } from './dto/track-performance.dto';
+import { TrackReportDto } from './dto/track-report.dto';
 
 @Injectable()
 export class TrackReportService {
   constructor(private prisma: PrismaService) {}
 
-  async report(reportDto: TrackPerformanceDto) {
+  async report(reportDto: TrackReportDto) {
     // 查找页面埋点定义
-  if(reportDto.cid){
     const pageTrack = await this.prisma.pageTrack.findUnique({
       where: { cid: reportDto.cid },
     });
-  }
 
     if (!pageTrack) {
       throw new NotFoundException(`页面埋点 ${reportDto.cid} 不存在`);
@@ -32,7 +30,13 @@ export class TrackReportService {
       return this.prisma.moduleTrackRecord.create({
         data: {
           moduleId: moduleTrack.id,
+          environment: reportDto.environment,
+          eventTime: new Date(reportDto.eventTime),
+          userId: reportDto.userId,
+          deviceInfo: reportDto.deviceInfo,
+          moduleInfo: reportDto.moduleInfo,
           extraInfo: reportDto.extraInfo,
+          sdkVersion: reportDto.sdkVersion,
         },
       });
     }
@@ -41,7 +45,14 @@ export class TrackReportService {
     return this.prisma.pageTrackRecord.create({
       data: {
         pageId: pageTrack.id,
+        environment: reportDto.environment,
+        eventTime: new Date(reportDto.eventTime),
+        userId: reportDto.userId,
+        deviceInfo: reportDto.deviceInfo,
+        url: reportDto.url,
+        referrer: reportDto.referrer,
         extraInfo: reportDto.extraInfo,
+        sdkVersion: reportDto.sdkVersion,
       },
     });
   }

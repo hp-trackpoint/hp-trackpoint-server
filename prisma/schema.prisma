@@ -25,7 +25,7 @@ model PageTrack {
   updateTime  DateTime  @updatedAt
   records     PageTrackRecord[]                     
   modules     ModuleTrack[]          
-  performance PagePerformance[] @relation("PagePerformancePage") // 明确指定关系名称
+  performance PagePerformance[] 
 }
 
 // 模块埋点定义
@@ -40,8 +40,7 @@ model ModuleTrack {
   createTime  DateTime  @default(now())
   updateTime  DateTime  @updatedAt
   records     ModuleTrackRecord[]        
-  performance PagePerformance[] @relation("PagePerformanceModule") // 明确指定关系名称   
-     
+  performance PagePerformance[] 
 }
 
 // 页面埋点数据记录
@@ -104,10 +103,10 @@ model ModuleTrackRecord {
 model PagePerformance {
   id          Int          @id @default(autoincrement())
   // 明确区分两种关系路径
-  pageId      Int?         @unique // 确保一对一关系
-  page        PageTrack?   @relation("PagePerformancePage", fields: [pageId], references: [id])
-  moduleId    Int?         @unique // 确保一对一关系
-  module      ModuleTrack? @relation("PagePerformanceModule", fields: [moduleId], references: [id])
+  pageId      String?        
+  page        PageTrack?   @relation(fields: [pageId], references: [cid])
+  moduleId    String?        
+  module      ModuleTrack? @relation( fields: [moduleId], references: [bid])
   extraInfo   Json?
   createTime  DateTime     @default(now())
 }
